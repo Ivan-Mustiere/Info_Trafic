@@ -4,8 +4,8 @@
 Prédire le niveau de trafic 30 minutes à l’avance sur un axe parisien donné, en exploitant les données open data des capteurs de comptage.
 
 ## 👥 Équipe
-- Lead Data : Ismael
 - MLOps : Ivan
+- Lead Data : Ismael
 - API : Mael
 - RGPD/Sécurité : Merveille
 
