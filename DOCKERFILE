@@ -1,17 +1,16 @@
+FROM python:3.9-slim
 
-#FROM python:3.9-slim
-FROM python:3.12.5 
-#pour moi
-
-# Définition du répertoire de travail
+# Répertoire de travail
 WORKDIR /app
 
-# Copie du code et des dépendances
+# Copier les fichiers dans le conteneur
 COPY . /app
-RUN pip install -r requirements.txt
 
-# Exposition du port 8000 (API FastAPI)
+# Installer les dépendances
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Exposer le port de l’API
 EXPOSE 8000
 
-# Commande de lancement
+# Lancer le serveur
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
