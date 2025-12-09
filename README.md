@@ -68,7 +68,7 @@ Le projet est organisé en **plusieurs conteneurs Docker**, chacun ayant une res
 | **etl**      | `Dockerfile.etl`      | `src/etl/` + `src/utils/`      | `/app/raw`, `/app/processed`, `/app/samples` | Nettoie, transforme et enrichit les données.                                              |
 | **training** | `Dockerfile.training` | `src/training/` + `src/utils/` | `/app/processed`, `/app/models`              | Entraîne les modèles ML et les sauvegarde dans `models/`.                                 |
 | **front**    | `Dockerfile.front`    | `frontend/` + `src/utils/`     | `/app/processed`, `/app/models`              | Affiche les données et résultats via l’interface utilisateur (Streamlit ou autre).        |
-| **api**      | `Dockerfile.api`      | `app.py` + `src/`              | `/app/data`                                  | Expose FastAPI pour déclencher le pipeline (ingest, ETL, training) via des requêtes HTTP. |
+| **api**      | `Dockerfile.api`      | `app.py`              | `-`                                  | Expose FastAPI pour déclencher le pipeline (ingest, ETL, training) via des requêtes HTTP. |
 
 ---
 
