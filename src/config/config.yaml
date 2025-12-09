@@ -1,0 +1,27 @@
+ingest:
+  broker: test.mosquitto.org
+  port: 1883
+  topics:
+    - "sensors/room1/temperature"
+    - "sensors/room1/humidity"
+  output_dir: "../raw/"
+
+etl:
+  input_dir: "../raw/"
+  output_dir: "../processed/"
+  columns_to_keep:
+    - "timestamp"
+    - "value"
+    - "sensor_id"
+
+ml:
+  test_size: 0.2
+  random_state: 42
+  model_params:
+    n_estimators: 100
+    max_depth: 5
+
+s3:
+  bucket_name: "my-ml-bucket"
+  raw_folder: "raw/"
+  processed_folder: "processed/"
