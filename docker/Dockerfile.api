@@ -1,0 +1,19 @@
+# Image de base
+FROM python:3.12-slim
+
+# Définir le répertoire de travail
+WORKDIR /app
+
+# Copier et installer les dépendances
+COPY docker/requirements/requirements.api.txt .
+RUN pip install --no-cache-dir -r requirements.api.txt
+
+# Copier le code
+COPY app.py ./app.py
+COPY src/ ./src/
+
+# Exposer le port FastAPI
+EXPOSE 8000
+
+# Lancer l’API
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -60,38 +60,42 @@ project/
 
 ## 🐳 Les différents conteneurs Docker et leur rôle
 
-Le projet est organisé en **plusieurs conteneurs Docker**, chacun ayant une responsabilité spécifique. Cela permet d’isoler les services, de faciliter le développement et de partager les données via des volumes.  
+Le projet est organisé en **plusieurs conteneurs Docker**, chacun ayant une responsabilité spécifique. Cela permet d’isoler les services, de faciliter le développement et de partager les données via des volumes.
 
-| Conteneur | Dockerfile | Dossier copié | Volumes utilisés | Rôle |
-|-----------|------------|---------------|-----------------|------|
-| **ingest** | `Dockerfile.ingest` | `src/ingest/` + `src/utils/` | `/app/raw`, `/app/samples` | Collecte les données depuis MQTT ou API et les stocke dans `raw/`. |
-| **etl** | `Dockerfile.etl` | `src/etl/` + `src/utils/` | `/app/raw`, `/app/processed`, `/app/samples` | Nettoie, transforme et enrichit les données. |
-| **training** | `Dockerfile.training` | `src/training/` + `src/utils/` | `/app/processed`, `/app/models` | Entraîne les modèles ML et les sauvegarde dans `models/`. |
-| **front** | `Dockerfile.front` | `frontend/` + `src/utils/` | `/app/processed`, `/app/models` | Affiche les données et résultats via l’interface utilisateur (Streamlit ou autre). |
+| Conteneur    | Dockerfile            | Dossier copié                  | Volumes utilisés                             | Rôle                                                                                      |
+| ------------ | --------------------- | ------------------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
+| **ingest**   | `Dockerfile.ingest`   | `src/ingest/` + `src/utils/`   | `/app/raw`, `/app/samples`                   | Collecte les données depuis MQTT ou API et les stocke dans `raw/`.                        |
+| **etl**      | `Dockerfile.etl`      | `src/etl/` + `src/utils/`      | `/app/raw`, `/app/processed`, `/app/samples` | Nettoie, transforme et enrichit les données.                                              |
+| **training** | `Dockerfile.training` | `src/training/` + `src/utils/` | `/app/processed`, `/app/models`              | Entraîne les modèles ML et les sauvegarde dans `models/`.                                 |
+| **front**    | `Dockerfile.front`    | `frontend/` + `src/utils/`     | `/app/processed`, `/app/models`              | Affiche les données et résultats via l’interface utilisateur (Streamlit ou autre).        |
+| **api**      | `Dockerfile.api`      | `app.py` + `src/`              | `/app/data`                                  | Expose FastAPI pour déclencher le pipeline (ingest, ETL, training) via des requêtes HTTP. |
+
+---
 
 ### Points importants
 
-- Chaque conteneur **est isolé** et a ses propres dépendances (`requirements.txt` spécifique).  
-- Les dossiers `raw/`, `processed/` et `models/` sont **mutualisés via des volumes**, permettant la communication entre conteneurs.  
-- Cela permet de **lancer uniquement un service** pour le développement ou le test, sans reconstruire tout le pipeline.  
-- Le front peut accéder aux données et modèles produits par les autres conteneurs en temps réel.  
+* Chaque conteneur **est isolé** et a ses propres dépendances (`requirements.txt` spécifique).
+* Les dossiers `raw/`, `processed/` et `models/` sont **mutualisés via des volumes**, permettant la communication entre conteneurs.
+* Cela permet de **lancer uniquement un service** pour le développement ou le test, sans reconstruire tout le pipeline.
+* Le front peut accéder aux données et modèles produits par les autres conteneurs en temps réel.
+* L’API permet de **déclencher tout le pipeline** ou des parties spécifiques via des endpoints HTTP (`/ingest`, `/etl`, `/training`).
 
-
-
+---
 
 # ▶️ Exécuter le projet via Docker
 
 ## 1. Lancer tout le pipeline avec Docker Compose
 
-Depuis la racine du projet, tu peux construire et démarrer **tous les services** (ingest, ETL, training, front) en une seule commande :  
+Depuis la racine du projet, tu peux construire et démarrer **tous les services** (ingest, ETL, training, front, API) en une seule commande :
 
 ```bash
 docker-compose up --build
-````
+```
 
 * `--build` : reconstruit toutes les images avant de démarrer les conteneurs.
 * Tous les conteneurs utilisent les volumes mutualisés (`data/raw`, `data/processed`, `data/models`).
-* Le front (Streamlit) sera accessible sur le port défini (ex. `8501`), et tout le pipeline fonctionne ensemble.
+* Le front (Streamlit) sera accessible sur le port défini (ex. `8501`).
+* L’API FastAPI sera accessible sur `http://localhost:8000` avec la documentation interactive `http://localhost:8000/docs`.
 
 Pour lancer en arrière-plan :
 
@@ -109,7 +113,7 @@ Si tu veux travailler sur **un service spécifique** sans démarrer tous les con
 docker-compose up --build etl
 ```
 
-* Remplace `etl` par `ingest`, `training` ou `front` selon le service que tu veux lancer.
+* Remplace `etl` par `ingest`, `training`, `front` ou `api` selon le service que tu veux lancer.
 * Les autres conteneurs **ne seront pas démarrés**, mais les volumes nécessaires seront toujours accessibles.
 
 ---
@@ -134,13 +138,13 @@ docker exec -it etl_container /bin/bash
 
 ## 4. Accéder à l’interface Front
 
-* Si tu as un front type **Streamlit** :
+* Streamlit :
 
 ```text
 http://localhost:8501
 ```
 
-* Pour un API type **FastAPI** :
+* API FastAPI :
 
 ```text
 http://localhost:8000
