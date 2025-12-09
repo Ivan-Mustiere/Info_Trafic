@@ -2,7 +2,7 @@
 
 ## 🎯 Objectif
 
-Prédire le niveau de trafic 30 minutes à l’avance sur un axe parisien donné, en exploitant les données open data des capteurs permanents.
+Prédire le niveau de trafic 1 heure à l’avance sur un axe parisien donné, en exploitant les données open data des capteurs permanents.
 
 ## 👥 Équipe
 
@@ -32,18 +32,31 @@ FastAPI, MLflow, Docker, GitHub Actions, GCP/AWS Free Tier.
 
 # 🚦Info_Trafic – Structure du projet
 
-```
+```text
 project/
-├─ app.py
-├─ README.md
-├─.gitignore
-├─ docker-compose.yml
-├─ data/                         # Jeux de test / dev
-├─ docker/                       # Dockerfile & requirements
+├─ app.py                       # Script principal / orchestrateur
+├─ README.md                     # Documentation principale
+├─ .gitignore                    # Fichiers et dossiers à ignorer par Git
+├─ docker-compose.yml            # Orchestration des conteneurs Docker
+├─ data/                         # Données : raw, processed, models, samples
+├─ docker/                       # Dockerfiles et requirements spécifiques
+│  ├─ Dockerfile.ingest
+│  ├─ Dockerfile.etl
+│  ├─ Dockerfile.training
+│  ├─ Dockerfile.front
+│  └─ requirements/
 ├─ src/                          # Code backend
-├─ frontend/                     # Code UI / dashboard
-└─ docs/                         # Documentation
-```
+│  ├─ ingest/
+│  ├─ etl/
+│  ├─ training/
+│  └─ utils/
+├─ frontend/                     # Interface utilisateur / dashboard
+│  ├─ app_front.py
+│  ├─ components/
+│  └─ assets/
+└─ docs/                         # Documentation supplémentaire
+````
+
 
 ## 🐳 Les différents conteneurs Docker et leur rôle
 
