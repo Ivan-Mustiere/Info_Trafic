@@ -44,6 +44,7 @@ project/
 │  ├─ Dockerfile.etl
 │  ├─ Dockerfile.training
 │  ├─ Dockerfile.front
+├─ Dockerfile.api
 │  └─ requirements/
 ├─ src/                          # Code backend
 │  ├─ ingest/
