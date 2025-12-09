@@ -34,7 +34,7 @@ FastAPI, MLflow, Docker, GitHub Actions, GCP/AWS Free Tier.
 
 ```text
 project/
-├─ app.py                       # Script principal / orchestrateur
+├─ app.py                        # Script principal / orchestrateur
 ├─ README.md                     # Documentation principale
 ├─ .gitignore                    # Fichiers et dossiers à ignorer par Git
 ├─ docker-compose.yml            # Orchestration des conteneurs Docker
