@@ -1,0 +1,17 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Installer uniquement les dépendances de l’ingestion
+COPY docker/requirements/requirements.ingest.txt .
+RUN pip install --no-cache-dir -r requirements.ingest.txt
+
+# Copier le code source nécessaire
+COPY src/ingest/ ./src/ingest/
+COPY src/utils/ ./src/utils/
+COPY app.py .
+
+# Créer les dossiers pour données et logs
+RUN mkdir -p /app/raw /app/samples /app/logs
+
+CMD ["python", "app.py", "--mode", "ingest"]
