@@ -9,6 +9,9 @@ services:
     volumes:
       - ./data/raw:/app/raw
       - ./data/samples:/app/samples
+    env_file:
+      - .env
+      - .env.aws
     networks:
       - ml-network
 
@@ -23,6 +26,8 @@ services:
       - ./data/samples:/app/samples
     depends_on:
       - ingest
+    env_file:
+      - .env
     networks:
       - ml-network
 
@@ -36,6 +41,8 @@ services:
       - ./models:/app/models
     depends_on:
       - etl
+    env_file:
+      - .env
     networks:
       - ml-network
 
@@ -52,6 +59,8 @@ services:
     depends_on:
       - etl
       - training
+    env_file:
+      - .env
     networks:
       - ml-network
 
@@ -69,6 +78,8 @@ services:
       - ingest
       - etl
       - training
+    env_file:
+      - .env
     networks:
       - ml-network
 

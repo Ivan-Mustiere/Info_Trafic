@@ -67,8 +67,8 @@ Le projet est organisé en **plusieurs conteneurs Docker**, chacun ayant une res
 | ------------ | --------------------- | ------------------------------ | -------------------------------------------- | ----------------------------------------------------------------------------------------- |
 | **ingest**   | `Dockerfile.ingest`   | `src/ingest/` + `src/utils/`   | `/app/raw`, `/app/samples`                   | Collecte les données depuis MQTT ou API et les stocke dans `raw/`.                        |
 | **etl**      | `Dockerfile.etl`      | `src/etl/` + `src/utils/`      | `/app/raw`, `/app/processed`, `/app/samples` | Nettoie, transforme et enrichit les données.                                              |
-| **training** | `Dockerfile.training` | `src/training/` + `src/utils/` | `/app/processed`, `/app/models`              | Entraîne les modèles ML et les sauvegarde dans `models/`.                                 |
-| **front**    | `Dockerfile.front`    | `frontend/` + `src/utils/`     | `/app/processed`, `/app/models`              | Affiche les données et résultats via l’interface utilisateur (Streamlit ou autre).        |
+| **training** | `Dockerfile.training` | `src/training/` + `src/utils/` + `models/` | `/app/processed`, `/app/models`              | Entraîne les modèles ML et les sauvegarde dans `models/`.                                 |
+| **front**    | `Dockerfile.front`    | `frontend/` + `src/utils/` + `models/`    | `/app/processed`, `/app/models`              | Affiche les données et résultats via l’interface utilisateur (Streamlit ou autre).        |
 | **api**      | `Dockerfile.api`      | `app.py`              | `-`                                  | Expose FastAPI pour déclencher le pipeline (ingest, ETL, training) via des requêtes HTTP. |
 
 ---
