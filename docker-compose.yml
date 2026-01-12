@@ -9,6 +9,7 @@ services:
     volumes:
       - ./data/raw:/app/raw
       - ./data/samples:/app/samples
+      - ./logs/ingest:/app/logs
     env_file:
       - .env
       - .env.aws
@@ -24,6 +25,7 @@ services:
       - ./data/raw:/app/raw
       - ./data/processed:/app/processed
       - ./data/samples:/app/samples
+      - ./logs/etl:/app/logs
     depends_on:
       - ingest
     env_file:
@@ -39,6 +41,7 @@ services:
     volumes:
       - ./data/processed:/app/processed
       - ./models:/app/models
+      - ./logs/training:/app/logs
     depends_on:
       - etl
     env_file:
@@ -52,10 +55,11 @@ services:
       dockerfile: docker/Dockerfile.front
     container_name: front_container
     ports:
-      - "8501:8501"   # ex: Streamlit
+      - "8501:8501"
     volumes:
       - ./data/processed:/app/processed
       - ./models:/app/models
+      - ./logs/front:/app/logs
     depends_on:
       - etl
       - training
@@ -68,11 +72,13 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile.api
+    container_name: api_container
     ports:
       - "8000:8000"
     volumes:
       - ./data:/app/data
       - ./models:/app/models
+      - ./logs/api:/app/logs
     restart: always
     depends_on:
       - ingest
