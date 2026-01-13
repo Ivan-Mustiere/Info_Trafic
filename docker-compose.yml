@@ -7,7 +7,7 @@ services:
     volumes:
       - ./data/raw:/app/raw
       - ./data/samples:/app/samples
-      - ./logs/ingest:/app/logs
+      - ./logs:/app/logs
     env_file:
       - .env
       - .env.aws
@@ -24,6 +24,7 @@ services:
       - ./data/processed:/app/processed
       - ./data/samples:/app/samples
       - ./logs/etl:/app/logs
+
     env_file:
       - .env
     networks:
@@ -69,7 +70,7 @@ services:
     volumes:
       - ./data:/app/data
       - ./models:/app/models
-      - ./logs/api:/app/logs
+      - ./logs:/app/logs
     restart: always
     env_file:
       - .env
