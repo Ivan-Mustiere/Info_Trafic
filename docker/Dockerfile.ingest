@@ -7,8 +7,8 @@ COPY docker/requirements/requirements.ingest.txt .
 RUN pip install --no-cache-dir -r requirements.ingest.txt
 
 # Copier le code source nécessaire
-COPY src/ingest/ ./src/ingest/
-COPY src/utils/ ./src/utils/
+COPY src/ingest/ ./ingest/
+COPY src/utils/ ./utils/
 COPY app.py .
 
 # Créer les dossiers pour données et logs

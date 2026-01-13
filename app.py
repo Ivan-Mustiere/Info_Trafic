@@ -1,45 +1,30 @@
 # app.py
-
 import argparse
-import logging
-import threading
-
-from src.ingest.app import ingest_run
-from src.etl.app import etl_process
-from src.training.train import main
-
-# Configuration simple, une fois
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s | %(levelname)s | %(message)s",
-    handlers=[
-        logging.FileHandler("logs/app.log"),  # fichier dans ton dossier logs
-        logging.StreamHandler()               # affichage console
-    ]
-)
+from utils.log_utils import logger
 
 def ingest():
-    logger = logging.getLogger("ingest")
-    logger.info("📥 Lancement de l’ingestion...")
+    from ingest.ingest_run import ingest_run
+    log = logger("Ingest")  # variable différente
+    log.info("📥 Lancement de l’ingestion...")
     ingest_run()
-    logger.info("✅ Ingestion terminée !")
+    log.info("✅ Ingestion terminée !")
 
 def etl():
-    logger = logging.getLogger("etl")
-    logger.info("🔄 Lancement de l’ETL...")
-    etl_process()
-    logger.info("✅ ETL terminé !")
+    from etl.etl_run import etl_run
+    log = logger("Etl")
+    log.info("🔄 Lancement de l’ETL...")
+    etl_run()
+    log.info("✅ ETL terminé !")
 def training():
-    logger = logging.getLogger("training")
-    logger.info("🤖 Lancement du training ML...")
+    log = logger("Training")
+    from training.train import main
+    log.info("🤖 Lancement du training ML...")
     main()
-    logger.info("✅ Training terminé !")
+    log.info("✅ Training terminé !")
 def run_api():
-
+    import threading
     from fastapi import FastAPI
-
     from pydantic import BaseModel
-
     import uvicorn
 
     app = FastAPI(

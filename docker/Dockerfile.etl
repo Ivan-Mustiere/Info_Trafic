@@ -5,8 +5,8 @@ WORKDIR /app
 COPY docker/requirements/requirements.etl.txt .
 RUN pip install --no-cache-dir -r requirements.etl.txt
 
-COPY src/etl/ ./src/etl/
-COPY src/utils/ ./src/utils/
+COPY src/etl/ ./etl/
+COPY src/utils/ ./utils/
 COPY app.py .
 
 RUN mkdir -p /app/raw /app/processed /app/samples /app/logs
