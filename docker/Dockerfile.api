@@ -10,7 +10,6 @@ RUN pip install --no-cache-dir -r requirements.api.txt
 
 # Copier le code
 COPY app.py ./app.py
-COPY src/ ./src/
 
 # Exposer le port FastAPI
 EXPOSE 8000

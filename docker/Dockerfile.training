@@ -5,8 +5,8 @@ WORKDIR /app
 COPY docker/requirements/requirements.training.txt .
 RUN pip install --no-cache-dir -r requirements.training.txt
 
-COPY src/training/ ./src/training/
-COPY src/utils/ ./src/utils/
+COPY src/training/ ./training/
+COPY src/utils/ ./utils/
 COPY app.py .
 
 RUN mkdir -p /app/processed /app/models /app/logs
