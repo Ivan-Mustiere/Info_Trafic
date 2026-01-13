@@ -68,12 +68,11 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./data:/app/data
       - ./models:/app/models
       - ./logs:/app/logs
     restart: always
-    depends_on:
-      - front
+    #depends_on:
+    #  - front
     env_file:
       - .env
     networks:
