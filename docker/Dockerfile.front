@@ -7,7 +7,7 @@ RUN pip install --no-cache-dir -r requirements.front.txt
 
 # Copier uniquement le code nécessaire pour l’UI et les utils
 COPY frontend/ ./frontend/
-COPY src/utils/ ./src/utils/
+COPY src/utils/ ./utils/
 
 # Créer dossiers pour données et modèles
 RUN mkdir -p /app/processed /app/models /app/logs

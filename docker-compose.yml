@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   ingest:
     build:
@@ -26,8 +24,6 @@ services:
       - ./data/processed:/app/processed
       - ./data/samples:/app/samples
       - ./logs/etl:/app/logs
-    depends_on:
-      - ingest
     env_file:
       - .env
     networks:
@@ -42,8 +38,6 @@ services:
       - ./data/processed:/app/processed
       - ./models:/app/models
       - ./logs/training:/app/logs
-    depends_on:
-      - etl
     env_file:
       - .env
     networks:
@@ -60,9 +54,6 @@ services:
       - ./data/processed:/app/processed
       - ./models:/app/models
       - ./logs/front:/app/logs
-    depends_on:
-      - etl
-      - training
     env_file:
       - .env
     networks:
@@ -80,10 +71,6 @@ services:
       - ./models:/app/models
       - ./logs/api:/app/logs
     restart: always
-    depends_on:
-      - ingest
-      - etl
-      - training
     env_file:
       - .env
     networks:
