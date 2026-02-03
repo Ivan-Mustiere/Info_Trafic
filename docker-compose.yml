@@ -11,6 +11,8 @@ services:
     env_file:
       - .env
       - .env.aws
+    environment:
+      - CONTAINER_NAME=INGEST
     networks:
       - ml-network
 
@@ -27,6 +29,8 @@ services:
 
     env_file:
       - .env
+    environment:
+      - CONTAINER_NAME=ETL
     networks:
       - ml-network
 
@@ -41,6 +45,8 @@ services:
       - ./logs:/app/logs
     env_file:
       - .env
+    environment:
+      - CONTAINER_NAME=TRAINING
     networks:
       - ml-network
 
@@ -57,6 +63,8 @@ services:
       - ./logs:/app/logs
     env_file:
       - .env
+    environment:
+      - CONTAINER_NAME=FRONT
     networks:
       - ml-network
 
@@ -75,6 +83,8 @@ services:
     #  - front
     env_file:
       - .env
+    environment:
+      - CONTAINER_NAME=API
     networks:
       - ml-network
 

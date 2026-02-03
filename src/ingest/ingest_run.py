@@ -5,7 +5,8 @@ from utils.log_utils import logger
 SAMPLES_DIR = "/app/samples"
 RAW_DIR = "/app/raw"
 
-log = logger("Ingest")
+container_name = os.getenv("CONTAINER_NAME", "default_logger")
+log = logger(container_name)
 
 def ingest_run(dataset_name="dossier.csv"):
     """

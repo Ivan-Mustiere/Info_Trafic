@@ -1,29 +1,31 @@
 # app.py
 import argparse
+import os
 from utils.log_utils import logger
+
+container_name = os.getenv("CONTAINER_NAME", "default_logger")
 
 def ingest():
     from ingest.ingest_run import ingest_run
-    log = logger("Ingest")  # variable différente
-    log.info("📥 Lancement de l’ingestion...")
+    log = logger(container_name)
+    log.info("Lancement de l’ingestion...")
     ingest_run()
-    log.info("✅ Ingestion terminée !")
+    log.info("Ingestion terminée !")
     log.info("===============================================")
-
 def etl():
     from etl.etl_run import etl_run
-    log = logger("Etl")
-    log.info("🔄 Lancement de l’ETL...")
+    log = logger(container_name)
+    log.info("Lancement de l’ETL...")
     etl_run()
-    log.info("✅ ETL terminé !")
+    log.info("ETL terminé !")
     log.info("===============================================")
 def training():
-    log = logger("Training")
+    log = logger(container_name)
     from training.train import main
-    log.info("🤖 Lancement du training ML...")
+    log.info("Lancement du training ML...")
     main()
-    log.info("✅ Training terminé !")
-
+    log.info("Training terminé !")
+    log.info("===============================================")
 
 def api():
     """
@@ -33,7 +35,7 @@ def api():
     import uvicorn
 
     log = logger("API")
-    log.info("🚀 Démarrage de l'API FastAPI en local...")
+    log.info("Démarrage de l'API FastAPI...")
     uvicorn.run("api.api:app", host="0.0.0.0", port=8000, reload=True)
 
 
