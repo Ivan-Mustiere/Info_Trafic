@@ -23,6 +23,20 @@ def training():
     log.info("🤖 Lancement du training ML...")
     main()
     log.info("✅ Training terminé !")
+
+
+def api():
+    """
+    Lancement de l'API FastAPI en local (hors Docker).
+    Utile pour tester rapidement le serving du modèle.
+    """
+    import uvicorn
+
+    log = logger("API")
+    log.info("🚀 Démarrage de l'API FastAPI en local...")
+    uvicorn.run("api.api:app", host="0.0.0.0", port=8000, reload=True)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
@@ -39,3 +53,6 @@ if __name__ == "__main__":
 
     elif args.mode == "training":
         training()
+
+    elif args.mode == "api":
+        api()
