@@ -1,80 +1,43 @@
 # app.py
 import argparse
+import os
 from utils.log_utils import logger
+
+container_name = os.getenv("CONTAINER_NAME", "default_logger")
 
 def ingest():
     from ingest.ingest_run import ingest_run
-    log = logger("Ingest")  # variable différente
-    log.info("📥 Lancement de l’ingestion...")
+    log = logger(container_name)
+    log.info("Lancement de l’ingestion...")
     ingest_run()
-    log.info("✅ Ingestion terminée !")
-
+    log.info("Ingestion terminée !")
+    log.info("===============================================")
 def etl():
     from etl.etl_run import etl_run
-    log = logger("Etl")
-    log.info("🔄 Lancement de l’ETL...")
+    log = logger(container_name)
+    log.info("Lancement de l’ETL...")
     etl_run()
-    log.info("✅ ETL terminé !")
+    log.info("ETL terminé !")
+    log.info("===============================================")
 def training():
-    log = logger("Training")
+    log = logger(container_name)
     from training.train import main
-    log.info("🤖 Lancement du training ML...")
+    log.info("Lancement du training ML...")
     main()
-    log.info("✅ Training terminé !")
-def run_api():
-    import threading
-    from fastapi import FastAPI
-    from pydantic import BaseModel
+    log.info("Training terminé !")
+    log.info("===============================================")
+
+def api():
+    """
+    Lancement de l'API FastAPI en local (hors Docker).
+    Utile pour tester rapidement le serving du modèle.
+    """
     import uvicorn
 
-    app = FastAPI(
+    log = logger("API")
+    log.info("Démarrage de l'API FastAPI...")
+    uvicorn.run("api.api:app", host="0.0.0.0", port=8000, reload=True)
 
-        title="API Info Trafic",
-
-        description="API pour gérer ingestion, ETL et training",
-
-        version="1.0"
-
-    )
-
-    class JobRequest(BaseModel):
-
-        mode: str
-
-    @app.get("/status", tags=["Info"])
-
-    def status():
-
-        return {"status": "API OK"}
-    @app.post("/run-job", tags=["Jobs"])
-
-    def run_job(request: JobRequest):
-
-        mode = request.mode.lower()
-
-        def target():
-
-            if mode == "ingest":
-
-                ingest()
-
-            elif mode == "etl":
-
-                etl()
-
-            elif mode == "training":
-
-                training()
-
-            else:
-
-                print(f"❌ Mode inconnu : {mode}")
-
-        threading.Thread(target=target).start()
-
-        return {"status": f"{mode} lancé en arrière-plan"}
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 if __name__ == "__main__":
 
@@ -85,17 +48,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.mode == "ingest":
-
         ingest()
 
     elif args.mode == "etl":
-
         etl()
 
     elif args.mode == "training":
-
         training()
 
     elif args.mode == "api":
-
-        run_api()
+        api()

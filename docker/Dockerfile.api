@@ -9,10 +9,13 @@ COPY docker/requirements/requirements.api.txt .
 RUN pip install --no-cache-dir -r requirements.api.txt
 
 # Copier le code
-COPY app.py ./app.py
+COPY api/ .
+COPY src/utils/log_utils.py ./utils/log_utils.py
+
+RUN mkdir -p /app/logs
 
 # Exposer le port FastAPI
 EXPOSE 8000
 
-# Lancer l’API
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+# Lancer l'API avec uvicorn
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]

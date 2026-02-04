@@ -1,12 +1,16 @@
 import os
 import glob
-import pandas as pd
 from utils.log_utils import logger
+from utils.file_utils import read_csv, write_csv
+from etl.transformations.clean_dataframe import clean_dataframe
+from etl.transformations.clean_columns import clean_columns
+from etl.transformations.clean_date import clean_date
 
 PROCESSED_DIR = "/app/processed"
 os.makedirs(PROCESSED_DIR, exist_ok=True)
 
-log = logger("Etl")
+container_name = os.getenv("CONTAINER_NAME", "default_logger")
+log = logger(container_name)
 
 def etl_run():
     env = os.environ.get("ENV", "preprod").lower()
@@ -20,21 +24,23 @@ def etl_run():
         log.warning(f"Plusieurs CSV trouvés, traitement du premier : {csv_files[0]}")
 
     raw_path = csv_files[0]
-    filename = os.path.basename(raw_path)
-    processed_path = os.path.join(PROCESSED_DIR, filename)
+    processed_path = os.path.join(PROCESSED_DIR, "processed_data.csv")
 
     # Extract
     log.info(f"Lecture du fichier {raw_path}")
-    df = pd.read_csv(raw_path, sep=";")
+    df = read_csv(raw_path)
 
     # Transform
-    df.dropna(inplace=True)
-    for col in df.select_dtypes(include="object"):
-        df[col] = df[col].str.strip()
-    log.info(f"Transformation terminée, {len(df)} lignes conservées")
+    df = clean_dataframe(df)
+    log.info(f"Nettoyage terminé, {len(df)} lignes conservées")
+    df = clean_columns(df)
+    log.info(f"Colonnes transformation terminée, {len(df)} lignes conservées")
+    df = clean_date(df)
+    log.info(f"Date et heure de comptage transformation terminée, {len(df)} lignes conservées")
+    log.info(f"ETL Transformation terminée, {len(df)} lignes conservées")
 
     # Load
-    df.to_csv(processed_path, index=False, sep=";")
+    write_csv(df, processed_path)
     log.info(f"Fichier transformé sauvegardé dans {processed_path}")
 
 if __name__ == "__main__":
