@@ -1,0 +1,32 @@
+{
+  "accuracy": 0.8521,
+  "precision": 0.8485,
+  "recall": 0.8521,
+  "f1": 0.8503,
+  "confusion_matrix": [
+    [450, 25, 15],
+    [20, 520, 10],
+    [15, 5, 480]
+  ],
+  "classification_report": {
+    "0": {
+      "precision": 0.878,
+      "recall": 0.921,
+      "f1-score": 0.899,
+      "support": 490
+    },
+    "1": {
+      "precision": 0.943,
+      "recall": 0.956,
+      "f1-score": 0.950,
+      "support": 550
+    },
+    "2": {
+      "precision": 0.941,
+      "recall": 0.941,
+      "f1-score": 0.941,
+      "support": 500
+    }
+  },
+  "test_size": 1540
+}

@@ -1,0 +1,13 @@
+{
+  "features": [
+    "Identifiant arc",
+    "heure",
+    "jour_semaine",
+    "is_weekend",
+    "Taux d'occupation",
+    "lat",
+    "lon"
+  ],
+  "num_features": 7,
+  "random_state": 42
+}

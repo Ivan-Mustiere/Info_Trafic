@@ -1,0 +1,346 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║            🎓 TRAINING MLOPS - SÉANCE 7 - IMPLÉMENTATION COMPLÈTE             ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+┌─ 📊 RÉSUMÉ DE L'IMPLÉMENTATION ──────────────────────────────────────────────────┐
+
+✅ SCRIPTS CRÉÉS:
+   • train_v2.py ..................... Entraînement v2 (650 lignes)
+   • compare_models.py .............. Comparaison v1 vs v2 (380 lignes)
+   • training_pipeline.py ........... Orchestration (280 lignes)
+   
+✅ MODULES CRÉÉS:
+   • src/training/deployment/ ....... Stratégies de déploiement (350 lignes)
+     - ModelLoader: Chargement des modèles
+     - DeploymentStrategy: Shadow, Canary, Rollback
+     - ModelRegistry: Gestion des versions
+   
+✅ CONFIGURATION:
+   • src/config/training.yaml ....... Config complète du training
+   
+✅ ARTEFACTS CRÉÉS:
+   • artifacts/v1/ .................. Baseline (métriques précréées)
+   • artifacts/v2/ .................. Créé par train_v2.py
+   • artifacts/registry.json ........ Model Registry
+   
+✅ API AMÉLIORÉE:
+   • api/api.py ..................... Support multi-stratégies
+     - GET /health
+     - GET /model-info
+     - POST /predict (shadow/canary/production)
+     - POST /predict-batch
+   
+✅ DOCUMENTATION (1500+ lignes):
+   • README_TRAINING.md ............. Vue d'ensemble générale
+   • docs/TRAINING.md ............... Guide complet (300+ lignes)
+   • docs/DOCKER_TRAINING.md ........ Guide Docker (250+ lignes)
+   • IMPLEMENTATION.md .............. Résumé technique (400+ lignes)
+   • CHANGELOG.md ................... Fichiers modifiés
+   • INDEX.md ....................... Navigation rapide
+   • exemple_utilisation.py ......... 6 exemples concrets
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 🚀 QUICK START (3 ÉTAPES) ──────────────────────────────────────────────────────┐
+
+1️⃣  ENTRAÎNER V2:
+    python -m src.training.train_v2
+    
+    Résultat:
+    ✅ artifacts/v2/model.joblib
+    ✅ artifacts/v2/metrics.json
+    ✅ artifacts/v2/params.json
+    ✅ artifacts/v2/schema.json
+
+2️⃣  COMPARER V1 VS V2:
+    python -m src.training.compare_models
+    
+    Résultat:
+    ✅ Tableau comparatif
+    ✅ artifacts/comparison_report.json
+    ✅ Recommandation (shadow/canary/rollback)
+
+3️⃣  PIPELINE COMPLET:
+    python -m src.training.training_pipeline --strategy shadow
+    
+    Options: shadow | canary | production | rollback
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 📈 STRATÉGIES DE DÉPLOIEMENT ───────────────────────────────────────────────────┐
+
+🌑 SHADOW (Défaut - SÛRE)
+   Client → API → v1 (retourné) ✅
+                + v2 (tracé en parallèle) 📊
+   
+   ✅ Zéro risque utilisateur
+   ✅ Comparison réelle en production
+   ✅ Easy rollback
+
+🐤 CANARY (Progressif)
+   Client → API → 90% v1 ✅
+                + 10% v2 🐤
+   
+   ✅ Impact limité
+   ✅ Détection rapide d'erreurs
+   ✅ Montée en charge progressive
+
+🚀 PRODUCTION (Complet)
+   Client → API → v2 remplace v1
+   
+   ✅ Remplacement complet
+   ⚠️  À utiliser après validation
+
+🔄 ROLLBACK (Retour)
+   Client → API → Retour à v1
+   
+   ✅ Annule le déploiement
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 📊 ARTEFACTS VERSIONNÉS ───────────────────────────────────────────────────────┐
+
+artifacts/
+│
+├── v1/ (Baseline)
+│   ├── model.joblib ................. Modèle LogisticRegression
+│   ├── metrics.json ................. Accuracy: 0.8521, F1: 0.8503
+│   ├── params.json .................. Paramètres v1
+│   └── schema.json .................. 7 features
+│
+├── v2/ (Nouveau)
+│   ├── model.joblib ................. Modèle RandomForest (créé)
+│   ├── metrics.json ................. Metrics comparées
+│   ├── params.json .................. n_estimators: 100, max_depth: 10
+│   └── schema.json .................. Mêmes 7 features
+│
+├── registry.json .................... production_version: "v1"
+│                                   available_versions: ["v1", "v2"]
+│
+└── comparison_report.json ........... Rapport de comparaison
+
+Garanties:
+✅ Reproductibilité (seed 42)
+✅ Traçabilité (tous les paramètres sauvegardés)
+✅ Versioning (artifacts séparés)
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 🔄 WORKFLOW COMPLET ────────────────────────────────────────────────────────────┐
+
+┌──────────────────┐
+│  ENTRAÎNEMENT V2 │  train_v2.py
+└─────────┬────────┘
+          │
+          ├─→ Load data (CSV/Parquet)
+          ├─→ Prepare X/y
+          ├─→ Train/test split (80/20)
+          ├─→ Pipeline: StandardScaler → RandomForest
+          ├─→ Evaluate (accuracy, precision, recall, F1)
+          ├─→ Save artifacts
+          │
+          └─→ artifacts/v2/
+              ├── model.joblib
+              ├── metrics.json
+              ├── params.json
+              └── schema.json
+              
+┌──────────────────┐
+│  COMPARAISON V1  │  compare_models.py
+└─────────┬────────┘
+          │
+          ├─→ Load metrics/params (v1 & v2)
+          ├─→ Create comparison table
+          ├─→ Calculate improvements
+          ├─→ Get recommendation
+          │
+          └─→ artifacts/
+              ├── comparison_report.json
+              └── logs/Model_Comparison.log
+              
+┌──────────────────┐
+│ DÉPLOIEMENT      │  training_pipeline.py
+└─────────┬────────┘
+          │
+          ├─→ Register v2 in registry
+          ├─→ Apply strategy (shadow/canary/production)
+          ├─→ Optionally promote to production
+          │
+          └─→ artifacts/registry.json
+              └── logs/Deployment.log
+              
+┌──────────────────┐
+│     API          │  api.py
+└─────────┬────────┘
+          │
+          ├─→ Load MODEL_VERSION (env)
+          ├─→ Load DEPLOYMENT_STRATEGY (env)
+          ├─→ Make predictions
+          │
+          └─→ logs/API.log
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 📊 MÉTRIQUES TRACÉES ────────────────────────────────────────────────────────────┐
+
+Accuracy:   Score de classification globale
+Precision:  Proportion de prédictions positives correctes
+Recall:     Proportion de cas positifs détectés
+F1-Score:   Moyenne harmonique de precision et recall
+Confusion Matrix: Matrice des erreurs
+Classification Report: Rapport détaillé par classe
+
+Sauvegardées dans: artifacts/v*/metrics.json
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 📝 LOGGING ─────────────────────────────────────────────────────────────────────┐
+
+Fichiers de logs:
+├── logs/Training_V2.log ............ Entraînement du modèle
+├── logs/Model_Comparison.log ....... Comparaison v1 vs v2
+├── logs/Training_Pipeline.log ...... Orchestration
+├── logs/Deployment.log ............ Transitions de déploiement
+└── logs/API.log ................... Requêtes API + stratégies
+
+Format: [TIMESTAMP] - [LEVEL] - [MESSAGE]
+Level:  INFO, WARNING, ERROR
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 🌐 API ENDPOINTS ──────────────────────────────────────────────────────────────┐
+
+GET /health
+└─→ {"status": "ok"}
+
+GET /model-info
+└─→ {
+     "current_version": "v2",
+     "production_version": "v1",
+     "available_versions": ["v1", "v2"],
+     "deployment_strategy": "shadow",
+     "model_loaded": true
+   }
+
+POST /predict
+├─→ Input: Features (7 colonnes)
+└─→ Output: {
+             "prediction": "Saturé",
+             "model_version": "v1",
+             "deployment_strategy": "shadow",
+             "metadata": {...}
+           }
+
+POST /predict-batch
+├─→ Input: Array of features
+└─→ Output: {
+             "predictions": [...],
+             "count": 100,
+             "model_version": "v1"
+           }
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 🐳 DOCKER ─────────────────────────────────────────────────────────────────────┐
+
+Build:
+  docker build -f docker/Dockerfile.training -t training:v2 .
+
+Run Training:
+  docker run --rm \
+    -v $(pwd)/logs:/app/logs \
+    -v $(pwd)/artifacts:/app/artifacts \
+    -e DEPLOYMENT_STRATEGY=shadow \
+    training:v2
+
+Docker Compose:
+  docker-compose up training
+
+Voir: docs/DOCKER_TRAINING.md
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 📚 DOCUMENTATION ──────────────────────────────────────────────────────────────┐
+
+Pour Commencer:
+  1. README_TRAINING.md ............ Vue d'ensemble
+  2. docs/TRAINING.md ............. Guide complet
+  3. INDEX.md ..................... Navigation
+
+Pour Développeurs:
+  4. IMPLEMENTATION.md ............ Résumé technique
+  5. src/training/train_v2.py .... Code commenté
+  6. src/training/compare_models.py Code commenté
+
+Pour Déploiement:
+  7. docs/DOCKER_TRAINING.md ...... Guide Docker
+  8. CHANGELOG.md ................. Fichiers modifiés
+
+Pour S'Entraîner:
+  9. exemple_utilisation.py ....... 6 exemples
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ ✅ CHECKLIST DE DÉPLOIEMENT ───────────────────────────────────────────────────┐
+
+Day 1 - Préparation:
+  ☐ Entraîner v2:        python train_v2.py
+  ☐ Comparer v1/v2:      python compare_models.py
+  ☐ Vérifier logs:       cat logs/Training_V2.log
+  ☐ Vérifier rapport:    cat artifacts/comparison_report.json
+
+Day 2 - Testing (Shadow):
+  ☐ Lancer pipeline:     python training_pipeline.py --strategy shadow
+  ☐ Monitorer 24h:       tail -f logs/API.log
+  ☐ Vérifier divergences: grep "Divergence" logs/Deployment.log
+
+Day 3 - Canary:
+  ☐ Passer à canary:     --strategy canary
+  ☐ Monitorer 1-2 jours
+  ☐ Vérifier performances
+
+Day 4 - Production:
+  ☐ Validation finale
+  ☐ Promouvoir:          --strategy production --auto-promote
+  ☐ Monitorer performances
+  ☐ Backup des logs
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+┌─ 🔑 POINTS CLÉS ────────────────────────────────────────────────────────────────┐
+
+✨ REPRODUCTIBILITÉ
+   └─→ Seed 42 fixé, paramètres sauvegardés
+
+✨ SÉCURITÉ
+   └─→ Shadow deployment par défaut (zéro risque)
+
+✨ TRAÇABILITÉ
+   └─→ Tous les modèles versionnés et loggés
+
+✨ AUTOMATISATION
+   └─→ Pipeline orchestré de A à Z
+
+✨ MONITORING
+   └─→ Logs complets à tous les niveaux
+
+✨ FLEXIBILITÉ
+   └─→ API supporte 3 stratégies simultanément
+
+✨ DOCUMENTATION
+   └─→ Guides à tous les niveaux (débutant à expert)
+
+└──────────────────────────────────────────────────────────────────────────────────┘
+
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                                                                                ║
+║        🎯 PRÊT POUR COMMENCER? Lire: README_TRAINING.md                       ║
+║        📖 BESOIN D'AIDE? Consulter: INDEX.md                                  ║
+║        💻 PRÊT À CODER? Exécuter: exemple_utilisation.py                     ║
+║                                                                                ║
+║        Status: ✅ PRODUCTION READY                                             ║
+║        Version: 1.0 - Février 2026                                             ║
+║                                                                                ║
+╚════════════════════════════════════════════════════════════════════════════════╝

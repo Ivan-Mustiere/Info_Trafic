@@ -1,0 +1,92 @@
+# Configuration du Training - Séance 7 MLOps
+
+# Répertoires
+data:
+  input_dir: "../data/processed/"
+  output_dir: "../data/processed/"
+  dataset_file: "dataset_processed.csv"
+
+# Artifacts
+artifacts:
+  base_dir: "../artifacts/"
+  versions:
+    - v1
+    - v2
+
+# Training v2
+training:
+  # Version du modèle
+  version: "v2"
+  
+  # Random state pour reproductibilité
+  random_state: 42
+  
+  # Split train/test
+  test_size: 0.2
+  validation_size: 0.1
+  
+  # Features
+  features:
+    - "Identifiant arc"
+    - "heure"
+    - "jour_semaine"
+    - "is_weekend"
+    - "Taux d'occupation"
+    - "lat"
+    - "lon"
+  
+  # Target
+  target: "Etat trafic"
+  
+  # Modèle: RandomForest
+  model:
+    algorithm: "RandomForest"
+    hyperparameters:
+      n_estimators: 100
+      max_depth: 10
+      min_samples_split: 5
+      min_samples_leaf: 2
+      random_state: 42
+      n_jobs: -1
+  
+  # Preprocessing
+  preprocessing:
+    handle_missing: "mean"  # mean, median, drop
+    scale: true
+    scaler_type: "StandardScaler"
+    encoding: "label"  # label ou onehot
+  
+  # Validation
+  metrics:
+    - "accuracy"
+    - "precision"
+    - "recall"
+    - "f1"
+    - "confusion_matrix"
+
+# Comparaison v1 vs v2
+comparison:
+  # Seuil minimum d'amélioration pour promouvoir v2
+  improvement_threshold: 0.01  # 1%
+  # Seuil maximum de dégradation toléré
+  degradation_threshold: -0.02  # -2%
+
+# Stratégies de déploiement
+deployment:
+  # Strategy: production, shadow, canary, rollback
+  default_strategy: "shadow"
+  
+  # Canary deployment
+  canary:
+    percentage: 0.1  # 10% du trafic vers le nouveau modèle
+  
+  # Shadow deployment: compare les prédictions sans affecter l'utilisateur
+  shadow:
+    enabled: true
+    log_divergences: true
+
+# Logging
+logging:
+  level: "INFO"
+  log_dir: "/app/logs"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

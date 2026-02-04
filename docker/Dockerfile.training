@@ -1,13 +1,43 @@
-FROM python:3.12-slim
+FROM python:3.11-slim
 
+# Set working directory
 WORKDIR /app
 
-COPY docker/requirements/requirements.training.txt .
-RUN pip install --no-cache-dir -r requirements.training.txt
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY src/training/ ./training/
-COPY src/utils/ ./utils/
-COPY app.py .
+# Copy requirements
+COPY docker/requirements/requirements.training.txt .
+COPY docker/requirements/requirements.etl.txt .
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.training.txt && \
+    pip install --no-cache-dir -r requirements.etl.txt
+
+# Copy source code
+COPY src/ src/
+COPY data/ data/
+COPY artifacts/ artifacts/
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV LOG_DIR=/app/logs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python -c "import joblib; print('ok')" || exit 1
+
+# Default command: run the full training pipeline
+CMD ["python", "-m", "src.training.training_pipeline", \
+     "--strategy", "shadow", \
+     "--compare"]
+
 
 RUN mkdir -p /app/processed /app/models /app/logs
 
