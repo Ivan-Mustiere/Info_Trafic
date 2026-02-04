@@ -3,8 +3,6 @@ __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
-*.env
-*.env.aws
 
 # Data
 data/raw/
@@ -20,3 +18,7 @@ logs/
 
 # ML
 models/
+
+# Env
+.env
+.env.aws
