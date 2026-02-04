@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-# Entrée pour le endpoint /predict
+# Entrée pour /predict
 class PredictionInput(BaseModel):
     identifiant_arc: int
     heure: float
@@ -10,6 +10,6 @@ class PredictionInput(BaseModel):
     lat: float
     lon: float
 
-# Sortie du endpoint /predict
+# Sortie pour /predict
 class PredictionOutput(BaseModel):
-    prediction: str  # ou float si ton modèle renvoie un float directement
+    prediction: str  # ou float si tu veux

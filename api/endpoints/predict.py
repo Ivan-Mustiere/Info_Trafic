@@ -1,14 +1,18 @@
 from fastapi import APIRouter
 from schemas import PredictionInput, PredictionOutput
-from api import model  # on importe le modèle chargé depuis api.py
+from model_loader import model
 
 router = APIRouter()
 
 @router.post("/predict", response_model=PredictionOutput)
 def predict(data: PredictionInput):
+    """
+    Endpoint de prédiction d'état du trafic.
+    """
     if model is None:
         return PredictionOutput(prediction="Modèle non disponible")
 
+    # Préparer les features pour le modèle
     X = [[
         data.identifiant_arc,
         data.heure,
@@ -18,6 +22,6 @@ def predict(data: PredictionInput):
         data.lat,
         data.lon
     ]]
-    
+
     y_pred = model.predict(X)
     return PredictionOutput(prediction=str(y_pred[0]))

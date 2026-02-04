@@ -58,9 +58,9 @@ services:
     ports:
       - "8501:8501"
     volumes:
-      - ./data/processed:/app/processed
-      - ./models:/app/models
       - ./logs:/app/logs
+    depends_on:
+      - api
     env_file:
       - .env
     environment:
@@ -79,8 +79,6 @@ services:
       - ./models:/app/models
       - ./logs:/app/logs
     restart: always
-    #depends_on:
-    #  - front
     env_file:
       - .env
     environment:
