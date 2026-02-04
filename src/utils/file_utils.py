@@ -2,7 +2,7 @@ import json
 import os
 import pandas as pd
 
-DEFAULT_CSV_SEP = ";"
+DEFAULT_CSV_SEP = ","
 DEFAULT_ENCODING = "utf-8"
 
 def read_json(path):

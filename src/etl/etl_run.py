@@ -2,8 +2,9 @@ import os
 import glob
 from utils.log_utils import logger
 from utils.file_utils import read_csv, write_csv
-from etl.transformations.clean_csv import clean_dataframe
-from etl.transformations.date_csv import date_csv
+from etl.transformations.clean_dataframe import clean_dataframe
+from etl.transformations.clean_columns import clean_columns
+from etl.transformations.clean_date import clean_date
 
 PROCESSED_DIR = "/app/processed"
 os.makedirs(PROCESSED_DIR, exist_ok=True)
@@ -33,9 +34,10 @@ def etl_run():
     # Transform
     df = clean_dataframe(df)
     log.info(f"Nettoyage terminé, {len(df)} lignes conservées")
-    df = date_csv(df)
-    log.info(f"Date transformation terminée, {len(df)} lignes conservées")
-
+    df = clean_columns(df)
+    log.info(f"Colonnes transformation terminée, {len(df)} lignes conservées")
+    df = clean_date(df)
+    log.info(f"Date et heure de comptage transformation terminée, {len(df)} lignes conservées")
     log.info(f"ETL Transformation terminée, {len(df)} lignes conservées")
 
     # Load
