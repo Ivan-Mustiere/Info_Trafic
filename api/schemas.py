@@ -2,13 +2,12 @@ from pydantic import BaseModel
 
 # Entrée pour /predict
 class PredictionInput(BaseModel):
-    identifiant_arc: int
-    heure: float
+    numero_route: int
+    debit_horaire: float
+    taux_occupation: float
     jour_semaine: int
     is_weekend: bool
-    taux_occupation: float
-    lat: float
-    lon: float
+    heure: float
 
 # Sortie pour /predict
 class PredictionOutput(BaseModel):

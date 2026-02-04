@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from schemas import PredictionInput, PredictionOutput
 from model_loader import model
 
@@ -13,15 +13,19 @@ def predict(data: PredictionInput):
         return PredictionOutput(prediction="Modèle non disponible")
 
     # Préparer les features pour le modèle
+    # Ordre attendu (training):
+    # Identifiant arc, Débit horaire, Taux d'occupation, jour_semaine, is_weekend, Heure de comptage
     X = [[
-        data.identifiant_arc,
-        data.heure,
-        data.jour_semaine,
-        data.is_weekend,
+        data.numero_route,
+        data.debit_horaire,
         data.taux_occupation,
-        data.lat,
-        data.lon
+        data.jour_semaine,
+        int(data.is_weekend),
+        data.heure,
     ]]
 
-    y_pred = model.predict(X)
-    return PredictionOutput(prediction=str(y_pred[0]))
+    try:
+        y_pred = model.predict(X)
+        return PredictionOutput(prediction=str(y_pred[0]))
+    except Exception as exc:
+        raise HTTPException(status_code=400, detail=f"Erreur de prédiction: {exc}")
