@@ -24,8 +24,7 @@ def etl_run():
         log.warning(f"Plusieurs CSV trouvés, traitement du premier : {csv_files[0]}")
 
     raw_path = csv_files[0]
-    filename = os.path.basename(raw_path)
-    processed_path = os.path.join(PROCESSED_DIR, filename)
+    processed_path = os.path.join(PROCESSED_DIR, "processed_data.csv")
 
     # Extract
     log.info(f"Lecture du fichier {raw_path}")
