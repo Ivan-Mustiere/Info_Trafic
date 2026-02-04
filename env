@@ -1,0 +1,11 @@
+# =========================
+# Environnement / Version
+# =========================
+ENVIRONMENT=PREPRODE
+VERSION=1.0
+DEBUG=True
+
+# =========================
+# Logging / Monitoring
+# =========================
+LOG_LEVEL=INFO
