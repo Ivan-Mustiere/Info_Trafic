@@ -1,16 +1,15 @@
 from pydantic import BaseModel
 
-
+# Entrée pour le endpoint /predict
 class PredictionInput(BaseModel):
-    """
-    Schéma d'entrée pour la prédiction de l'état du trafic.
-    Les champs correspondent aux features utilisées pendant le training.
-    """
-
     identifiant_arc: int
-    heure: int  # 0-23
-    jour_semaine: int  # 0=lundi, 6=dimanche
-    is_weekend: int  # 0 ou 1
+    heure: float
+    jour_semaine: int
+    is_weekend: bool
     taux_occupation: float
     lat: float
     lon: float
+
+# Sortie du endpoint /predict
+class PredictionOutput(BaseModel):
+    prediction: str  # ou float si ton modèle renvoie un float directement

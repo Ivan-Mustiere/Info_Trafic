@@ -1,53 +1,20 @@
 from fastapi import FastAPI
-import joblib
 from pathlib import Path
-from schemas import PredictionInput
+import joblib
 
-# Création de l'app FastAPI
+# pour la santé et charger le modèle
+from api.endpoints.predict import router
+
 app = FastAPI(title="Fil Rouge – API IA Trafic")
 
-# Chemin vers le modèle entraîné (pipeline scaler + modèle)
-MODEL_PATH = Path(__file__).resolve().parent / "models" / "model.joblib"
+MODEL_PATH = "/app/models/model.joblib"
 
-try:
-    model = joblib.load(MODEL_PATH)
-    print(f"✅ Modèle chargé depuis {MODEL_PATH}")
-except FileNotFoundError:
-    print(
-        f"⚠️  Modèle non trouvé à {MODEL_PATH}. "
-        f"L'API démarrera mais les prédictions ne fonctionneront pas."
-    )
-    model = None
+model = joblib.load(MODEL_PATH)
 
-
+# health check simple
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
-
-@app.post("/predict")
-def predict(data: PredictionInput):
-    """
-    Endpoint de prédiction d'état du trafic.
-    """
-    if model is None:
-        return {"error": "Modèle non disponible. Veuillez d'abord entraîner le modèle."}
-
-    # Les features doivent être passées dans le même ordre que pendant le training
-    X = [
-        [
-            data.identifiant_arc,
-            data.heure,
-            data.jour_semaine,
-            data.is_weekend,
-            data.taux_occupation,
-            data.lat,
-            data.lon,
-        ]
-    ]
-
-    prediction = model.predict(X)
-
-    return {
-        "prediction": str(prediction[0]),
-    }
+# inclure les endpoints
+app.include_router(router, prefix="/api")

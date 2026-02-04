@@ -13,8 +13,9 @@ def clean_date(df: pd.DataFrame) -> pd.DataFrame:
     df = df.copy()  # éviter de modifier l'original
 
     if "Date et heure de comptage" in df.columns:
-        df["Date et heure de comptage"] = pd.to_datetime(
+        df["Heure de comptage"] = pd.to_datetime(
             df["Date et heure de comptage"], errors="coerce"
         ).dt.hour
+        df = df.drop(columns=["Date et heure de comptage"])
 
     return df
