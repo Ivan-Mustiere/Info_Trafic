@@ -6,6 +6,7 @@ import streamlit as st
 
 
 API_URL = os.getenv("API_URL", "http://api:8000/api/predict")
+REQUEST_TIMEOUT = 10
 
 
 def build_payload(
@@ -14,7 +15,8 @@ def build_payload(
 	selected_time: dt_time,
 	debit_horaire: float,
 	taux_occupation: float,
-):
+) -> dict:
+	"""Construit le payload pour l'API avec validation."""
 	hour_value = selected_time.hour + selected_time.minute / 60.0
 	jour_semaine = selected_date.weekday()  # Monday=0
 	is_weekend = jour_semaine >= 5
@@ -27,6 +29,14 @@ def build_payload(
 		"is_weekend": bool(is_weekend),
 		"heure": float(hour_value),
 	}
+
+
+@st.cache_data(ttl=300)
+def call_prediction_api(api_url: str, payload: dict) -> dict:
+	"""Appelle l'API de prédiction avec mise en cache (5 min)."""
+	response = requests.post(api_url, json=payload, timeout=REQUEST_TIMEOUT)
+	response.raise_for_status()
+	return response.json()
 
 
 st.set_page_config(page_title="Info Trafic – Prédiction", layout="centered")
@@ -49,9 +59,14 @@ st.markdown(
 	unsafe_allow_html=True,
 )
 
+# Initialiser l'URL API dans session_state
+if "api_url" not in st.session_state:
+	st.session_state.api_url = API_URL
+
 with st.sidebar:
 	st.header("Paramètres API")
-	api_url = st.text_input("URL API", value=API_URL)
+	api_url = st.text_input("URL API", value=st.session_state.api_url, key="api_input")
+	st.session_state.api_url = api_url
 
 st.subheader("Entrées du modèle")
 
@@ -84,24 +99,41 @@ st.caption(
 	f"Jour de semaine: {payload['jour_semaine']} | Week-end: {payload['is_weekend']} | Heure: {payload['heure']:.2f}"
 )
 
-if st.button("Prédire"):
-	try:
-		response = requests.post(api_url, json=payload, timeout=10)
-		response.raise_for_status()
-		data = response.json()
-		prediction = str(data.get("prediction", "N/A"))
-		label = prediction.lower()
-		if "bloqu" in label:
-			badge_class = "badge-danger"
-		elif "satur" in label:
-			badge_class = "badge-warning"
-		else:
-			badge_class = "badge-ok"
-		st.markdown(
-			f"<div class='card'><div class='badge {badge_class}'>Prédiction : {prediction}</div></div>",
-			unsafe_allow_html=True,
-		)
-		with st.expander("Payload envoyé"):
-			st.json(payload)
-	except requests.exceptions.RequestException as exc:
-		st.error(f"Erreur API: {exc}")
+if st.button("Prédire", type="primary"):
+	# Validation des entrées
+	if debit_horaire <= 0:
+		st.error("Le débit horaire doit être supérieur à 0")
+	elif taux_occupation < 0 or taux_occupation > 100:
+		st.error("Le taux d'occupation doit être entre 0 et 100")
+	else:
+		try:
+			with st.spinner("Prédiction en cours..."):
+				# Appeler l'API
+				data = call_prediction_api(api_url, str(sorted(payload.items())))
+				prediction = str(data.get("prediction", "N/A"))
+				label = prediction.lower()
+				
+				# Mapping pour les badges
+				badge_class = (
+					"badge-danger" if "bloqu" in label
+					else "badge-warning" if "satur" in label
+					else "badge-ok"
+				)
+				
+				st.success("Prédiction réussie!")
+				st.markdown(
+					f"<div class='card'><div class='badge {badge_class}'>Prédiction : {prediction}</div></div>",
+					unsafe_allow_html=True,
+				)
+				with st.expander("Payload envoyé"):
+					st.json(payload)
+		except requests.exceptions.Timeout:
+			st.error(f"⏱️ Timeout: l'API n'a pas répondu dans les {REQUEST_TIMEOUT} secondes")
+		except requests.exceptions.ConnectionError:
+			st.error(f"🔌 Erreur de connexion: impossible de contacter l'API à {api_url}")
+		except requests.exceptions.HTTPError as exc:
+			st.error(f"❌ Erreur HTTP {exc.response.status_code}: {exc.response.text}")
+		except requests.exceptions.RequestException as exc:
+			st.error(f"❌ Erreur API: {exc}")
+		except Exception as exc:
+			st.error(f"❌ Erreur inattendue: {exc}")

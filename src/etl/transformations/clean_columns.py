@@ -2,9 +2,7 @@ import pandas as pd
 
 def clean_columns(df: pd.DataFrame) -> pd.DataFrame:
     """
-    Nettoie un DataFrame en :
-    - supprimant les lignes contenant des valeurs manquantes
-    - supprimant les colonnes inutiles pour l'analyse trafic
+    Nettoie un DataFrame en supprimant les colonnes inutiles pour l'analyse trafic.
 
     Args:
         df (pd.DataFrame): DataFrame brut   
@@ -12,8 +10,6 @@ def clean_columns(df: pd.DataFrame) -> pd.DataFrame:
     Returns:
         pd.DataFrame: DataFrame nettoyé
     """
-    df = df.copy()
-
     # Colonnes à supprimer
     columns_to_drop = [
         "Identifiant noeud amont",
@@ -24,8 +20,9 @@ def clean_columns(df: pd.DataFrame) -> pd.DataFrame:
         "lon"
     ]
 
-    # Suppression des colonnes inutiles
-    df.drop(columns=columns_to_drop, inplace=True, errors="ignore")
+    # Suppression des colonnes inutiles (ne crée pas de copie si errors='ignore')
+    existing_columns = [col for col in columns_to_drop if col in df.columns]
+    if existing_columns:
+        return df.drop(columns=existing_columns)
     
-
     return df
