@@ -13,8 +13,6 @@ services:
       - .env.aws
     environment:
       - CONTAINER_NAME=INGEST
-    networks:
-      - ml-network
 
   etl:
     build:
@@ -31,8 +29,6 @@ services:
       - .env
     environment:
       - CONTAINER_NAME=ETL
-    networks:
-      - ml-network
 
   training:
     build:
@@ -47,8 +43,6 @@ services:
       - .env
     environment:
       - CONTAINER_NAME=TRAINING
-    networks:
-      - ml-network
 
   front:
     build:

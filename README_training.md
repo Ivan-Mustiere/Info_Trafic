@@ -67,3 +67,5 @@ Ce script entraîne un modèle de machine learning en suivant les bonnes pratiqu
 
 ## Contact
 Pour toute question, contactez l'équipe de développement.
+
+//
